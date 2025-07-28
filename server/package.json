@@ -1,0 +1,30 @@
+{
+  "name": "portfolio-manager-server",
+  "version": "1.0.0",
+  "description": "Server for the Portfolio Manager application",
+  "main": "src/app.js",
+  "type": "module",
+  "scripts": {
+    "start": "node src/app.js",
+    "dev": "nodemon src/app.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/peterluvCS/portfolio-manager.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/peterluvCS/portfolio-manager/issues"
+  },
+  "homepage": "https://github.com/peterluvCS/portfolio-manager#readme",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.17.1",
+    "mongoose": "^5.10.9"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.4"
+  }
+}
