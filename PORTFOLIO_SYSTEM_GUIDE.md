@@ -81,10 +81,15 @@ CREATE TABLE portfolio (
 
 #### 三个核心API
 **负责文件：**
-- `server/src/routes/price.js` (价格API)
-- `server/src/routes/trade.js` (交易API)
-- `server/src/routes/portfolio.js` (投资组合API)
-- `server/src/controllers/` (控制器)
+- `server/src/routes/price.js` (价格API路由)
+- `server/src/routes/trade.js` (交易API路由)
+- `server/src/routes/portfolio.js` (投资组合API路由)
+- `server/src/controllers/priceController.js` (价格业务逻辑)
+- `server/src/controllers/tradeController.js` (交易业务逻辑)
+- `server/src/controllers/portfolioController.js` (投资组合业务逻辑)
+- `server/src/models/PriceModel.js` (价格数据操作)
+- `server/src/models/TradeModel.js` (交易数据操作)
+- `server/src/models/PortfolioModel.js` (投资组合数据操作)
 
 **功能清单：**
 - [ ] 价格API：获取单个/批量资产价格
