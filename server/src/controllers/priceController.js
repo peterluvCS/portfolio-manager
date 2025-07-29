@@ -1,6 +1,6 @@
-const Price = require('../models/Price');
-const yahooFinance = require('yahoo-finance2');
-const tickerMap = require('../../config/tockerMap')
+import Price from '../models/Price.js';
+import yahooFinance from 'yahoo-finance2';
+import tickerMap from '../../config/tickerMap.js';
 
 class PriceController {
     static async getBatchPrices(req, res) {
