@@ -7,7 +7,7 @@ CREATE TABLE stock_currency (
     name VARCHAR(100),
     price DECIMAL(18, 4) ,
     datetime DATETIME DEFAULT CURRENT_TIMESTAMP,
-    asset_type ENUM('stock', 'currency') NOT NULL,
+    asset_type ENUM('stock', 'currency', 'cash') NOT NULL,
     UNIQUE KEY unique_ticker_datetime (ticker, datetime)
 );
 
@@ -18,16 +18,19 @@ CREATE TABLE orders (
     quantity DECIMAL(18, 4) NOT NULL,
     price DECIMAL(18, 4) NOT NULL,
     datetime DATETIME DEFAULT CURRENT_TIMESTAMP,
-    asset_type ENUM('stock', 'currency') NOT NULL
+    asset_type ENUM('stock', 'currency', 'cash') NOT NULL
 );
 
 CREATE TABLE portfolio (
   ticker VARCHAR(20) PRIMARY KEY,   
   quantity DECIMAL(18, 4) NOT NULL, 
   avg_price DECIMAL(18, 4),   
-  asset_type ENUM('stock', 'currency') NOT NULL,
+  asset_type ENUM('stock', 'currency', 'cash') NOT NULL,
   updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP 
 );
+
+insert into portfolio (ticker, quantity, avg_price, asset_type) values
+('CASH', 0, 0, 'cash');
 
 
 
