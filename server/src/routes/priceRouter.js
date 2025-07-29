@@ -3,5 +3,6 @@ const priceRouter = express.Router();
 const PriceController = require('../controllers/PriceController');
 
 priceRouter.get('/batch', PriceController.getBatchPrices);
+priceRouter.post('/price/update-all', PriceController.updateAllPrices);
 
-module.exports = priceRouter;
+export default priceRouter;

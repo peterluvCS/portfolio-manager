@@ -14,6 +14,18 @@ class Price {
         `);
         return rows;
     }
+
+    static async insertPrice({ ticker, name, price, datetime, asset_type }) {
+        const db = await pool.getConnection();
+        try {
+          await db.execute(`
+            INSERT IGNORE INTO stock_currency (ticker, name, price, datetime, asset_type)
+            VALUES (?, ?, ?, ?, ?)
+          `, [ticker, name, price, datetime, asset_type]);
+        } finally {
+          db.release();
+        }
+    }
 }
 
 module.exports = Price;

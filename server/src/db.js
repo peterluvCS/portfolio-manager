@@ -1,27 +1,8 @@
-import mysql from 'mysql2/promise';
+
 import yahooFinance from 'yahoo-finance2';
 import cron from 'node-cron';
 
-const pool = mysql.createPool({
-    host: 'localhost',
-    user: 'root',
-    password: 'n3u3da!',
-    database: 'portfolio',
-    waitForConnections: true,
-    connectionLimit: 10,
-    queueLimit: 0
-  });
 
-const tickerMap = {
-  'AAPL':      { asset_type: 'stock',    realTicker: 'AAPL' },
-  'MSFT':      { asset_type: 'stock',    realTicker: 'MSFT' },
-  'NVDA':      { asset_type: 'stock',    realTicker: 'NVDA'},
-  'AMZN':      { asset_type: 'stock',    realTicker: 'AMZN'},
-  'WFC':       { asset_type: 'stock',    realTicker: 'WFC'},
-  'USD/CNY':   { asset_type: 'currency', realTicker: 'USDCNY=X' },
-  'USD/EUR':   { asset_type: 'currency', realTicker: 'USDEUR=X' },
-  'USD/JPY':   { asset_type: 'currency', realTicker: 'USDJPY=X' }
-};
 
 async function updatePrices() {
   const db = await pool.getConnection();
