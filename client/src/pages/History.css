@@ -1,0 +1,171 @@
+.history {
+  width: 100%;
+}
+
+.history-header {
+  margin-bottom: 32px;
+}
+
+.history-header h1 {
+  font-size: 32px;
+  font-weight: bold;
+  margin-bottom: 8px;
+  color: #FFFFFF;
+}
+
+.history-stats {
+  margin-bottom: 32px;
+}
+
+.stat-card {
+  text-align: center;
+}
+
+.stat-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.stat-header h3 {
+  font-size: 16px;
+  font-weight: 600;
+  color: #CCCCCC;
+  margin: 0;
+}
+
+.stat-icon {
+  font-size: 24px;
+}
+
+.stat-value {
+  font-size: 28px;
+  font-weight: bold;
+  color: #FFFFFF;
+}
+
+.transactions-table {
+  overflow-x: auto;
+}
+
+.transactions-table table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.transactions-table th,
+.transactions-table td {
+  padding: 16px;
+  text-align: left;
+  border-bottom: 1px solid #2A2A2A;
+}
+
+.transactions-table th {
+  font-weight: 600;
+  color: #CCCCCC;
+  background-color: #1A1A1A;
+  position: sticky;
+  top: 0;
+}
+
+.transactions-table td {
+  color: #FFFFFF;
+}
+
+.transaction-date {
+  font-size: 14px;
+  color: #CCCCCC;
+}
+
+.asset-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.asset-ticker {
+  font-weight: 600;
+  color: #FFFFFF;
+}
+
+.transaction-type {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+}
+
+.type-icon {
+  font-size: 16px;
+}
+
+.asset-type-badge {
+  padding: 4px 8px;
+  background-color: #0984E3;
+  color: #FFFFFF;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 500;
+  text-transform: uppercase;
+}
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 64px;
+  text-align: center;
+}
+
+.empty-icon {
+  font-size: 64px;
+  margin-bottom: 24px;
+}
+
+.empty-state h3 {
+  font-size: 24px;
+  font-weight: bold;
+  color: #FFFFFF;
+  margin-bottom: 12px;
+}
+
+.empty-state p {
+  font-size: 16px;
+  color: #CCCCCC;
+}
+
+.loading,
+.error {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 400px;
+  font-size: 18px;
+  color: #CCCCCC;
+}
+
+.error {
+  color: #D63031;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .history-stats {
+    grid-template-columns: 1fr;
+  }
+  
+  .transactions-table {
+    font-size: 14px;
+  }
+  
+  .transactions-table th,
+  .transactions-table td {
+    padding: 12px 8px;
+  }
+  
+  .transaction-type {
+    flex-direction: column;
+    gap: 4px;
+  }
+} 

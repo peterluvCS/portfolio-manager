@@ -1,0 +1,128 @@
+.dashboard {
+  width: 100%;
+  min-height: 100vh;
+}
+
+.dashboard-header {
+  margin-bottom: 32px;
+}
+
+.dashboard-header h1 {
+  font-size: 32px;
+  font-weight: bold;
+  margin-bottom: 8px;
+  color: #FFFFFF;
+}
+
+.overview-cards {
+  margin-bottom: 32px;
+}
+
+.overview-card {
+  text-align: center;
+  position: relative;
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.card-header h3 {
+  font-size: 16px;
+  font-weight: 600;
+  color: #CCCCCC;
+  margin: 0;
+}
+
+.card-icon {
+  font-size: 24px;
+}
+
+.card-value {
+  font-size: 28px;
+  font-weight: bold;
+  color: #FFFFFF;
+  margin-bottom: 8px;
+}
+
+.card-subtitle {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.holdings-table {
+  overflow-x: auto;
+}
+
+.holdings-table table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.holdings-table th,
+.holdings-table td {
+  padding: 16px;
+  text-align: left;
+  border-bottom: 1px solid #2A2A2A;
+}
+
+.holdings-table th {
+  font-weight: 600;
+  color: #CCCCCC;
+  background-color: #1A1A1A;
+  position: sticky;
+  top: 0;
+}
+
+.holdings-table td {
+  color: #FFFFFF;
+}
+
+.asset-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.asset-ticker {
+  font-weight: 600;
+  color: #FFFFFF;
+  margin-bottom: 4px;
+}
+
+.asset-name {
+  font-size: 14px;
+  color: #CCCCCC;
+}
+
+.loading,
+.error {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 400px;
+  font-size: 18px;
+  color: #CCCCCC;
+}
+
+.error {
+  color: #D63031;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .overview-cards {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .holdings-table {
+    font-size: 14px;
+  }
+  
+  .holdings-table th,
+  .holdings-table td {
+    padding: 12px 8px;
+  }
+} 
