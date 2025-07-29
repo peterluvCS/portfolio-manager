@@ -28,4 +28,4 @@ class Price {
     }
 }
 
-module.exports = Price;
+export default Price;

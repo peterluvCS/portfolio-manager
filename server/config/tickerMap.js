@@ -1,4 +1,4 @@
-export const tickerMap = {
+const tickerMap = {
   'AAPL':      { asset_type: 'stock',    realTicker: 'AAPL' },
   'MSFT':      { asset_type: 'stock',    realTicker: 'MSFT' },
   'NVDA':      { asset_type: 'stock',    realTicker: 'NVDA'},
@@ -8,3 +8,5 @@ export const tickerMap = {
   'USD/EUR':   { asset_type: 'currency', realTicker: 'USDEUR=X' },
   'USD/JPY':   { asset_type: 'currency', realTicker: 'USDJPY=X' }
 };
+
+export default tickerMap;

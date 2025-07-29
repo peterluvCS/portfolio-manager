@@ -47,7 +47,7 @@ class PriceController {
       
             const formattedTime = datetime.toISOString().slice(0, 19).replace('T', ' ');
       
-            await insertPrice({
+            await Price.insertPrice({
               ticker,
               name,
               price,
@@ -64,4 +64,4 @@ class PriceController {
     }
 }
 
-module.exports = PriceController;
+export default PriceController;
