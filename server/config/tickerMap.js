@@ -6,5 +6,6 @@ export const tickerMap = {
   'WFC':       { asset_type: 'stock',    realTicker: 'WFC'},
   'USD/CNY':   { asset_type: 'currency', realTicker: 'USDCNY=X' },
   'USD/EUR':   { asset_type: 'currency', realTicker: 'USDEUR=X' },
-  'USD/JPY':   { asset_type: 'currency', realTicker: 'USDJPY=X' }
+  'USD/JPY':   { asset_type: 'currency', realTicker: 'USDJPY=X' },
+  'CASH':      { asset_type: 'cash',     realTicker: null, fixedPrice: 1.00 }
 };
