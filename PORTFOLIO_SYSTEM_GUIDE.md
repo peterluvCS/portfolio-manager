@@ -46,7 +46,7 @@ CREATE TABLE stock_currency (
     name VARCHAR(100),
     price DECIMAL(18, 4),
     datetime DATETIME DEFAULT CURRENT_TIMESTAMP,
-    asset_type ENUM('stock', 'currency') NOT NULL,
+    asset_type ENUM('stock', 'currency', 'cash') NOT NULL,
     UNIQUE KEY unique_ticker_datetime (ticker, datetime)
 );
 ```
@@ -60,7 +60,7 @@ CREATE TABLE orders (
     quantity DECIMAL(18, 4) NOT NULL,
     price DECIMAL(18, 4) NOT NULL,
     datetime DATETIME DEFAULT CURRENT_TIMESTAMP,
-    asset_type ENUM('stock', 'currency') NOT NULL
+    asset_type ENUM('stock', 'currency', 'cash') NOT NULL
 );
 ```
 
@@ -70,10 +70,15 @@ CREATE TABLE portfolio (
     ticker VARCHAR(20) PRIMARY KEY,
     quantity DECIMAL(18, 4) NOT NULL,
     avg_price DECIMAL(18, 4),
-    asset_type ENUM('stock', 'currency') NOT NULL,
+    asset_type ENUM('stock', 'currency', 'cash') NOT NULL,
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 ```
+
+**注意：CASH资产的特殊性**
+- CASH价格固定为1.00，不参与价格更新
+- CASH不产生交易记录，只作为持仓存在
+- CASH用于计算投资组合的现金比例和总价值
 
 ## 👥 一日开发分工方案
 
