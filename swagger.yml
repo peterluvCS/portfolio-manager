@@ -180,7 +180,7 @@ paths:
   /trade/buy:
     post:
       summary: 买入交易
-      description: 执行买入交易，更新持仓记录。如果用户价格低于市场价格，交易将被拒绝。
+      description: 执行买入交易，更新持仓记录。如果用户价格低于市场价格，交易将被拒绝。需要足够的现金才能买入。
       tags:
         - 交易API
       requestBody:
@@ -237,8 +237,18 @@ paths:
                     format: float
                     description: 用户请求的价格
                     example: 155.50
+                  totalCost:
+                    type: number
+                    format: float
+                    description: 总成本
+                    example: 15550.00
+                  remainingCash:
+                    type: number
+                    format: float
+                    description: 剩余现金
+                    example: 34450.00
         '400':
-          description: 价格过低或请求参数错误
+          description: 价格过低、现金不足或其他错误
           content:
             application/json:
               schema:
@@ -246,14 +256,18 @@ paths:
                 properties:
                   error:
                     type: string
-                    example: "Price too low"
+                    example: "Insufficient cash"
                   message:
                     type: string
-                    example: "Your price (150.00) is below market price (155.50). Cannot execute buy order."
+                    example: "Need $15550.00 but only have $50000.00"
                   marketPrice:
                     type: number
                     format: float
                     example: 155.50
+                example:
+                  - error: "Price too low"
+                    message: "Your price (150.00) is below market price (155.50). Cannot execute buy order."
+                    marketPrice: 155.50
         '500':
           description: 服务器内部错误
           content:
@@ -264,7 +278,7 @@ paths:
   /trade/sell:
     post:
       summary: 卖出交易
-      description: 执行卖出交易，更新持仓记录。如果用户价格高于市场价格，交易将被拒绝。
+      description: 执行卖出交易，更新持仓记录。如果用户价格高于市场价格，交易将被拒绝。卖出后现金会增加。
       tags:
         - 交易API
       requestBody:
@@ -321,6 +335,16 @@ paths:
                     format: float
                     description: 用户请求的价格
                     example: 165.00
+                  totalProceeds:
+                    type: number
+                    format: float
+                    description: 总收益
+                    example: 8250.00
+                  newCashBalance:
+                    type: number
+                    format: float
+                    description: 新的现金余额
+                    example: 58250.00
         '400':
           description: 价格过高、持仓不足或其他错误
           content:
@@ -338,6 +362,10 @@ paths:
                     type: number
                     format: float
                     example: 165.00
+                example:
+                  - error: "Price too high"
+                    message: "Your price (170.00) is above market price (165.00). Cannot execute sell order."
+                    marketPrice: 165.00
         '500':
           description: 服务器内部错误
           content:
@@ -416,7 +444,7 @@ paths:
                           example: "2024-01-01T10:00:00Z"
                         assetType:
                           type: string
-                          enum: [stock, currency]
+                          enum: [stock, currency, cash]
                           example: "stock"
                   pagination:
                     type: object
@@ -493,6 +521,28 @@ paths:
                           type: number
                           format: float
                           example: 7.0
+                    example:
+                      - ticker: "AAPL"
+                        quantity: 100
+                        avgPrice: 150.00
+                        currentPrice: 160.50
+                        currentValue: 16050.00
+                        profitLoss: 1050.00
+                        profitLossPercent: 7.0
+                      - ticker: "MSFT"
+                        quantity: 50
+                        avgPrice: 200.00
+                        currentPrice: 190.00
+                        currentValue: 9500.00
+                        profitLoss: -500.00
+                        profitLossPercent: -5.0
+                      - ticker: "CASH"
+                        quantity: 50000
+                        avgPrice: 1.00
+                        currentPrice: 1.00
+                        currentValue: 50000.00
+                        profitLoss: 0.00
+                        profitLossPercent: 0.0
                   summary:
                     type: object
                     properties:

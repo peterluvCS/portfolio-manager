@@ -425,8 +425,29 @@ const buyTrade = async (req, res) => {
         
         // 3. 使用市场价格成交
         const executionPrice = marketPrice;
+        const totalCost = quantity * executionPrice;
         
-        // 4. 获取现有持仓
+        // 4. 检查现金是否足够
+        const [cashHolding] = await pool.execute(
+            'SELECT quantity FROM portfolio WHERE ticker = ?',
+            ['CASH']
+        );
+        
+        if (cashHolding.length === 0 || cashHolding[0].quantity < totalCost) {
+            return res.status(400).json({ 
+                error: 'Insufficient cash', 
+                message: `Need $${totalCost} but only have $${cashHolding[0]?.quantity || 0}`
+            });
+        }
+        
+        // 5. 扣除现金
+        const newCashQuantity = cashHolding[0].quantity - totalCost;
+        await pool.execute(
+            'UPDATE portfolio SET quantity = ? WHERE ticker = ?',
+            [newCashQuantity, 'CASH']
+        );
+        
+        // 6. 获取现有持仓
         const [existing] = await pool.execute(
             'SELECT * FROM portfolio WHERE ticker = ?',
             [ticker]
@@ -450,7 +471,7 @@ const buyTrade = async (req, res) => {
             );
         }
         
-        // 5. 记录交易
+        // 7. 记录交易
         await pool.execute(
             'INSERT INTO orders (ticker, type, quantity, price, asset_type) VALUES (?, ?, ?, ?, ?)',
             [ticker, 'BUY', quantity, executionPrice, 'stock']
@@ -461,7 +482,9 @@ const buyTrade = async (req, res) => {
             message: 'Buy order executed',
             executionPrice,
             marketPrice,
-            requestedPrice: price
+            requestedPrice: price,
+            totalCost,
+            remainingCash: newCashQuantity
         });
     } catch (error) {
         res.status(500).json({ error: error.message });
@@ -499,6 +522,7 @@ const sellTrade = async (req, res) => {
         
         // 3. 使用市场价格成交
         const executionPrice = marketPrice;
+        const totalProceeds = quantity * executionPrice;
         
         // 4. 检查持仓
         const [existing] = await pool.execute(
@@ -525,7 +549,19 @@ const sellTrade = async (req, res) => {
             );
         }
         
-        // 6. 记录交易
+        // 6. 增加现金
+        const [cashHolding] = await pool.execute(
+            'SELECT quantity FROM portfolio WHERE ticker = ?',
+            ['CASH']
+        );
+        
+        const newCashQuantity = (cashHolding[0]?.quantity || 0) + totalProceeds;
+        await pool.execute(
+            'UPDATE portfolio SET quantity = ? WHERE ticker = ?',
+            [newCashQuantity, 'CASH']
+        );
+        
+        // 7. 记录交易
         await pool.execute(
             'INSERT INTO orders (ticker, type, quantity, price, asset_type) VALUES (?, ?, ?, ?, ?)',
             [ticker, 'SELL', quantity, executionPrice, 'stock']
@@ -536,7 +572,9 @@ const sellTrade = async (req, res) => {
             message: 'Sell order executed',
             executionPrice,
             marketPrice,
-            requestedPrice: price
+            requestedPrice: price,
+            totalProceeds,
+            newCashBalance: newCashQuantity
         });
     } catch (error) {
         res.status(500).json({ error: error.message });
