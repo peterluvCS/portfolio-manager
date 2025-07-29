@@ -1,4 +1,6 @@
-import Price from '../models/price.js';
+import Price from '../models/Price.js';
+import yahooFinance from 'yahoo-finance2';
+import tickerMap from '../../config/tickerMap.js';
 
 class PriceController {
     static async getBatchPrices(req, res) {
@@ -16,6 +18,28 @@ class PriceController {
             res.status(500).json({ error: error.message });
         }
     }
+    static async updateAllPrices(req, res) {
+        const { mode = 'realtime', date } = req.body;
+        const results = [];
+      
+        try {
+          if (mode === 'historical') {
+            if (!date) return res.status(400).json({ message: "Missing 'date' for historical mode." });
+      
+            const r = await Price.fetchAndInsertHistoricalPrices(date);
+            return res.json({ message: `Historical prices for ${date} updated.`, results: r });
+          }
+      
+          // Default: realtime
+          const r = await Price.fetchAndInsertRealTimePrices();
+          return res.json({ message: 'Real-time prices updated.', results: r });
+      
+        } catch (error) {
+          console.error(error);
+          return res.status(500).json({ message: 'Update failed.', error: error.message });
+        }
+      }
+
 }
 
 export default PriceController;
