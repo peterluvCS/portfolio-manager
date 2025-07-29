@@ -1,4 +1,4 @@
-import { executeBuyTrade } from '../models/TradeModel.js';
+import { executeBuyTrade, handleSellTrade } from '../models/TradeModel.js';
 
 export const handleBuyTrade = async (req, res) => {
   try {
@@ -17,4 +17,17 @@ export const handleBuyTrade = async (req, res) => {
       ...(error.marketPrice && { marketPrice: error.marketPrice }),
     });
   }
+};
+
+export const executeSellTrade = async (req, res) => {
+    try {
+        const result = await handleSellTrade(req.body);
+        res.status(200).json(result);
+    } catch (error) {
+        if (error.type === 'validation') {
+            res.status(400).json(error.details);
+        } else {
+            res.status(500).json({ error: error.message });
+        }
+    }
 };
