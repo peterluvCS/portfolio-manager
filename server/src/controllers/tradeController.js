@@ -1,4 +1,4 @@
-import { executeBuyTrade, handleSellTrade } from '../models/TradeModel.js';
+import { executeBuyTrade, handleSellTrade, getAllOrders } from '../models/TradeModel.js';
 
 export const handleBuyTrade = async (req, res) => {
   try {
@@ -30,4 +30,9 @@ export const executeSellTrade = async (req, res) => {
             res.status(500).json({ error: error.message });
         }
     }
+};
+
+export const getAllOrdersController = async (req, res) => {
+  const orders = await getAllOrders();
+  res.status(200).json(orders);
 };
