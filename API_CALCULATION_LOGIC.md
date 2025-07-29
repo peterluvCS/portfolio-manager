@@ -697,6 +697,105 @@ const getPortfolio = async (req, res) => {
 };
 ```
 
+#### 4. 充值 (`POST /api/portfolio/deposit`)
+```javascript
+// 充值
+const deposit = async (req, res) => {
+    try {
+        const { amount } = req.body;
+        
+        if (amount <= 0) {
+            return res.status(400).json({ error: 'Amount must be positive' });
+        }
+
+        // 1. 获取当前现金余额
+        const [cashHolding] = await pool.execute(
+            'SELECT quantity FROM portfolio WHERE ticker = ?',
+            ['CASH']
+        );
+        
+        const newCashQuantity = (cashHolding[0]?.quantity || 0) + amount;
+        
+        // 2. 更新现金余额
+        if (cashHolding.length === 0) {
+            await pool.execute(
+                'INSERT INTO portfolio (ticker, quantity, avg_price, asset_type) VALUES (?, ?, ?, ?)',
+                ['CASH', amount, 1, 'cash']
+            );
+        } else {
+            await pool.execute(
+                'UPDATE portfolio SET quantity = ? WHERE ticker = ?',
+                [newCashQuantity, 'CASH']
+            );
+        }
+        
+        // 3. 记录交易
+        await pool.execute(
+            'INSERT INTO orders (ticker, type, quantity, price, asset_type) VALUES (?, ?, ?, ?, ?)',
+            ['CASH', 'DEPOSIT', amount, 1, 'cash']
+        );
+        
+        res.json({
+            success: true,
+            message: 'Deposit successful',
+            amount,
+            newBalance: newCashQuantity
+        });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
+```
+
+#### 5. 提现 (`POST /api/portfolio/withdraw`)
+```javascript
+// 提现
+const withdraw = async (req, res) => {
+    try {
+        const { amount } = req.body;
+        
+        if (amount <= 0) {
+            return res.status(400).json({ error: 'Amount must be positive' });
+        }
+
+        // 1. 检查现金余额
+        const [cashHolding] = await pool.execute(
+            'SELECT quantity FROM portfolio WHERE ticker = ?',
+            ['CASH']
+        );
+        
+        if (cashHolding.length === 0 || cashHolding[0].quantity < amount) {
+            return res.status(400).json({ 
+                error: 'Insufficient funds',
+                available: cashHolding[0]?.quantity || 0
+            });
+        }
+        
+        // 2. 更新现金余额
+        const newCashQuantity = cashHolding[0].quantity - amount;
+        await pool.execute(
+            'UPDATE portfolio SET quantity = ? WHERE ticker = ?',
+            [newCashQuantity, 'CASH']
+        );
+        
+        // 3. 记录交易
+        await pool.execute(
+            'INSERT INTO orders (ticker, type, quantity, price, asset_type) VALUES (?, ?, ?, ?, ?)',
+            ['CASH', 'WITHDRAW', amount, 1, 'cash']
+        );
+        
+        res.json({
+            success: true,
+            message: 'Withdrawal successful',
+            amount,
+            newBalance: newCashQuantity
+        });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
+```
+
 ## 🎯 关键要点
 
 ### 平均成本计算
