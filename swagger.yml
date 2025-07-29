@@ -1,0 +1,606 @@
+openapi: 3.0.3
+info:
+  title: Portfolio Management System API
+  description: 个人投资组合管理系统API，支持美股和外汇交易，具有实时价格更新、盈亏计算、交易历史等功能
+  version: 1.0.0
+  contact:
+    name: Portfolio Manager Team
+    email: support@portfolio-manager.com
+
+servers:
+  - url: http://localhost:8081/api
+    description: Development server
+
+paths:
+  # 价格API
+  /price/{ticker}:
+    get:
+      summary: 获取单个资产价格
+      description: 获取指定资产的最新价格信息
+      tags:
+        - 价格API
+      parameters:
+        - name: ticker
+          in: path
+          required: true
+          description: 资产代码（如AAPL、MSFT等）
+          schema:
+            type: string
+            example: "AAPL"
+      responses:
+        '200':
+          description: 成功获取价格信息
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ticker:
+                    type: string
+                    example: "AAPL"
+                  price:
+                    type: number
+                    format: float
+                    example: 160.50
+                  lastUpdated:
+                    type: string
+                    format: date-time
+                    example: "2024-01-01T09:30:00Z"
+        '404':
+          description: 资产未找到
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Asset not found"
+        '500':
+          description: 服务器内部错误
+
+  /price/batch:
+    get:
+      summary: 批量获取所有资产价格
+      description: 获取所有活跃资产的最新价格信息
+      tags:
+        - 价格API
+      responses:
+        '200':
+          description: 成功获取所有价格信息
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  prices:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        ticker:
+                          type: string
+                          example: "AAPL"
+                        price:
+                          type: number
+                          format: float
+                          example: 160.50
+                        lastUpdated:
+                          type: string
+                          format: date-time
+                          example: "2024-01-01T09:30:00Z"
+        '400':
+          description: 请求参数错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: 服务器内部错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /price/update-all:
+    post:
+      summary: 更新所有资产价格
+      description: 调用Yahoo API更新所有资产的最新价格
+      tags:
+        - 价格API
+      responses:
+        '200':
+          description: 价格更新完成
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Price update completed"
+                  results:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        ticker:
+                          type: string
+                          example: "AAPL"
+                        price:
+                          type: number
+                          format: float
+                          example: 160.50
+                        status:
+                          type: string
+                          enum: [success, error]
+                          example: "success"
+                        message:
+                          type: string
+                          example: "No price data"
+                    example:
+                      - ticker: "AAPL"
+                        price: 160.50
+                        status: "success"
+                      - ticker: "MSFT"
+                        price: 320.75
+                        status: "success"
+                      - ticker: "NVDA"
+                        price: 450.25
+                        status: "success"
+                      - ticker: "AMZN"
+                        price: 135.80
+                        status: "success"
+                      - ticker: "WFC"
+                        price: 45.30
+                        status: "success"
+                      - ticker: "USD/CNY"
+                        price: 7.25
+                        status: "success"
+                      - ticker: "USD/EUR"
+                        price: 0.92
+                        status: "success"
+                      - ticker: "USD/JPY"
+                        price: 150.45
+                        status: "success"
+        '400':
+          description: 请求参数错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: 服务器内部错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  # 交易API
+  /trade/buy:
+    post:
+      summary: 买入交易
+      description: 执行买入交易，更新持仓记录。如果用户价格低于市场价格，交易将被拒绝。需要足够的现金才能买入。
+      tags:
+        - 交易API
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - ticker
+                - quantity
+                - price
+              properties:
+                ticker:
+                  type: string
+                  description: 资产代码
+                  example: "AAPL"
+                quantity:
+                  type: number
+                  format: float
+                  description: 买入数量
+                  example: 100
+                price:
+                  type: number
+                  format: float
+                  description: 用户期望的买入价格（必须大于等于市场价格）
+                  example: 155.50
+      responses:
+        '200':
+          description: 买入交易执行成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "Buy order executed"
+                  executionPrice:
+                    type: number
+                    format: float
+                    description: 实际成交价格（市场价格）
+                    example: 155.50
+                  marketPrice:
+                    type: number
+                    format: float
+                    description: 当前市场价格
+                    example: 155.50
+                  requestedPrice:
+                    type: number
+                    format: float
+                    description: 用户请求的价格
+                    example: 155.50
+                  totalCost:
+                    type: number
+                    format: float
+                    description: 总成本
+                    example: 15550.00
+                  remainingCash:
+                    type: number
+                    format: float
+                    description: 剩余现金
+                    example: 34450.00
+        '400':
+          description: 价格过低、现金不足或其他错误
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Insufficient cash"
+                  message:
+                    type: string
+                    example: "Need $15550.00 but only have $50000.00"
+                  marketPrice:
+                    type: number
+                    format: float
+                    example: 155.50
+                example:
+                  - error: "Price too low"
+                    message: "Your price (150.00) is below market price (155.50). Cannot execute buy order."
+                    marketPrice: 155.50
+        '500':
+          description: 服务器内部错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /trade/sell:
+    post:
+      summary: 卖出交易
+      description: 执行卖出交易，更新持仓记录。如果用户价格高于市场价格，交易将被拒绝。卖出后现金会增加。
+      tags:
+        - 交易API
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - ticker
+                - quantity
+                - price
+              properties:
+                ticker:
+                  type: string
+                  description: 资产代码
+                  example: "AAPL"
+                quantity:
+                  type: number
+                  format: float
+                  description: 卖出数量
+                  example: 50
+                price:
+                  type: number
+                  format: float
+                  description: 用户期望的卖出价格（必须小于等于市场价格）
+                  example: 165.00
+      responses:
+        '200':
+          description: 卖出交易执行成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "Sell order executed"
+                  executionPrice:
+                    type: number
+                    format: float
+                    description: 实际成交价格（市场价格）
+                    example: 165.00
+                  marketPrice:
+                    type: number
+                    format: float
+                    description: 当前市场价格
+                    example: 165.00
+                  requestedPrice:
+                    type: number
+                    format: float
+                    description: 用户请求的价格
+                    example: 165.00
+                  totalProceeds:
+                    type: number
+                    format: float
+                    description: 总收益
+                    example: 8250.00
+                  newCashBalance:
+                    type: number
+                    format: float
+                    description: 新的现金余额
+                    example: 58250.00
+        '400':
+          description: 价格过高、持仓不足或其他错误
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Price too high"
+                  message:
+                    type: string
+                    example: "Your price (170.00) is above market price (165.00). Cannot execute sell order."
+                  marketPrice:
+                    type: number
+                    format: float
+                    example: 165.00
+                example:
+                  - error: "Price too high"
+                    message: "Your price (170.00) is above market price (165.00). Cannot execute sell order."
+                    marketPrice: 165.00
+        '500':
+          description: 服务器内部错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /trade/history:
+    get:
+      summary: 获取交易历史
+      description: 获取交易历史记录，支持分页和过滤
+      tags:
+        - 交易API
+      parameters:
+        - name: page
+          in: query
+          description: 页码（从1开始）
+          schema:
+            type: integer
+            default: 1
+            minimum: 1
+          example: 1
+        - name: limit
+          in: query
+          description: 每页记录数
+          schema:
+            type: integer
+            default: 20
+            minimum: 1
+            maximum: 100
+          example: 20
+        - name: ticker
+          in: query
+          description: 按资产代码过滤
+          schema:
+            type: string
+          example: "AAPL"
+      responses:
+        '200':
+          description: 成功获取交易历史
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  history:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                          example: 1
+                        ticker:
+                          type: string
+                          example: "AAPL"
+                        type:
+                          type: string
+                          enum: [BUY, SELL]
+                          example: "BUY"
+                        quantity:
+                          type: number
+                          format: float
+                          example: 100
+                        price:
+                          type: number
+                          format: float
+                          example: 155.50
+                        totalAmount:
+                          type: number
+                          format: float
+                          example: 15550.00
+                        datetime:
+                          type: string
+                          format: date-time
+                          example: "2024-01-01T10:00:00Z"
+                        assetType:
+                          type: string
+                          enum: [stock, currency, cash]
+                          example: "stock"
+                  pagination:
+                    type: object
+                    properties:
+                      page:
+                        type: integer
+                        example: 1
+                      limit:
+                        type: integer
+                        example: 20
+                      total:
+                        type: integer
+                        example: 150
+                      totalPages:
+                        type: integer
+                        example: 8
+        '400':
+          description: 请求参数错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: 服务器内部错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  # 投资组合API
+  /portfolio:
+    get:
+      summary: 获取投资组合概览
+      description: 获取当前持仓列表和投资组合汇总信息
+      tags:
+        - 投资组合API
+      responses:
+        '200':
+          description: 成功获取投资组合信息
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  portfolio:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        ticker:
+                          type: string
+                          example: "AAPL"
+                        quantity:
+                          type: number
+                          format: float
+                          example: 100
+                        avgPrice:
+                          type: number
+                          format: float
+                          example: 150.00
+                        currentPrice:
+                          type: number
+                          format: float
+                          example: 160.50
+                        currentValue:
+                          type: number
+                          format: float
+                          example: 16050.00
+                        profitLoss:
+                          type: number
+                          format: float
+                          example: 1050.00
+                        profitLossPercent:
+                          type: number
+                          format: float
+                          example: 7.0
+                    example:
+                      - ticker: "AAPL"
+                        quantity: 100
+                        avgPrice: 150.00
+                        currentPrice: 160.50
+                        currentValue: 16050.00
+                        profitLoss: 1050.00
+                        profitLossPercent: 7.0
+                      - ticker: "MSFT"
+                        quantity: 50
+                        avgPrice: 200.00
+                        currentPrice: 190.00
+                        currentValue: 9500.00
+                        profitLoss: -500.00
+                        profitLossPercent: -5.0
+                      - ticker: "CASH"
+                        quantity: 50000
+                        avgPrice: 1.00
+                        currentPrice: 1.00
+                        currentValue: 50000.00
+                        profitLoss: 0.00
+                        profitLossPercent: 0.0
+                  summary:
+                    type: object
+                    properties:
+                      totalCost:
+                        type: number
+                        format: float
+                        example: 25000.00
+                      totalValue:
+                        type: number
+                        format: float
+                        example: 25500.00
+                      totalProfitLoss:
+                        type: number
+                        format: float
+                        example: 500.00
+                      totalProfitLossPercent:
+                        type: number
+                        format: float
+                        example: 2.0
+        '400':
+          description: 请求参数错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: 服务器内部错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+components:
+  schemas:
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+          description: 错误信息
+      required:
+        - error
+
+  # 安全配置（如果需要认证，可以取消注释）
+  # securitySchemes:
+  #   ApiKeyAuth:
+  #     type: apiKey
+  #     in: header
+  #     name: X-API-Key
+
+tags:
+  - name: 价格API
+    description: 资产价格相关操作
+  - name: 交易API
+    description: 买入卖出交易操作
+  - name: 投资组合API
+    description: 投资组合信息查询
+
+# 全局安全设置（如果需要认证，可以取消注释）
+# security:
+#   - ApiKeyAuth: [] 
