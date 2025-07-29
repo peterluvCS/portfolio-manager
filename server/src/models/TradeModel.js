@@ -168,3 +168,11 @@ export const handleSellTrade = async ({ ticker, quantity, price }) => {
         newCashBalance: newCashQuantity
     };
 };
+
+/**
+ * get all orders
+ */
+export const getAllOrders = async () => {
+  const [orders] = await pool.execute('SELECT * FROM orders');
+  return orders;
+};
