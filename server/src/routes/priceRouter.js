@@ -5,6 +5,6 @@ import PriceController from '../controllers/PriceController.js';
 const priceRouter = Router();
 
 priceRouter.get('/batch', PriceController.getBatchPrices);
-priceRouter.get('/update-all', PriceController.updateAllPrices);
+priceRouter.post('/update-all', PriceController.updateAllPrices);
 
 export default priceRouter; 

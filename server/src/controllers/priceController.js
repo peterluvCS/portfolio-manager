@@ -18,50 +18,28 @@ class PriceController {
             res.status(500).json({ error: error.message });
         }
     }
-
     static async updateAllPrices(req, res) {
+        const { mode = 'realtime', date } = req.body;
         const results = [];
       
-        for (const [ticker, info] of Object.entries(tickerMap)) {
-          try {
-            const data = info.asset_type === 'stock'
-              ? await yahooFinance.quoteSummary(info.realTicker, { modules: ['price'] })
-              : await yahooFinance.quote(info.realTicker);
+        try {
+          if (mode === 'historical') {
+            if (!date) return res.status(400).json({ message: "Missing 'date' for historical mode." });
       
-            const price = data?.price?.regularMarketPrice ?? data?.regularMarketPrice;
-            const name = data?.price?.shortName ?? ticker;
-            const rawTime = data?.price?.regularMarketTime ?? data?.regularMarketTime;
-      
-            if (!price) throw new Error('Empty price');
-      
-            let datetime;
-            if (!rawTime) {
-              datetime = new Date();
-            } else if (typeof rawTime === 'number') {
-              datetime = new Date(rawTime * 1000);
-            } else if (rawTime instanceof Date) {
-              datetime = rawTime;
-            } else {
-              datetime = new Date(rawTime);
-            }
-      
-            const formattedTime = datetime.toISOString().slice(0, 19).replace('T', ' ');
-      
-            await Price.insertPrice({
-              ticker,
-              name,
-              price,
-              datetime: formattedTime,
-              asset_type: info.asset_type
-            });
-      
-            results.push({ ticker, status: 'success', price, time: formattedTime });
-          } catch (err) {
-            results.push({ ticker, status: 'error', message: err.message });
+            const r = await Price.fetchAndInsertHistoricalPrices(date);
+            return res.json({ message: `Historical prices for ${date} updated.`, results: r });
           }
+      
+          // Default: realtime
+          const r = await Price.fetchAndInsertRealTimePrices();
+          return res.json({ message: 'Real-time prices updated.', results: r });
+      
+        } catch (error) {
+          console.error(error);
+          return res.status(500).json({ message: 'Update failed.', error: error.message });
         }
-        res.json({ message: 'Price update finished', results });
-    }
+      }
+
 }
 
 export default PriceController;
