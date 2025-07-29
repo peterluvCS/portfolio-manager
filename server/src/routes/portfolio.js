@@ -11,5 +11,20 @@ const portfolioController = new PortfolioController();
 router.get('/', async (req, res) => {
     await portfolioController.getPortfolio(req, res);
 });
+/**
+ * POST /api/portfolio/charge
+ * 充值现金
+ */
+router.post('/charge', async (req, res) => {
+    await portfolioController.chargeCash(req, res);
+});
+
+/**
+ * POST /api/portfolio/withdraw
+ * 提现现金
+ */
+router.post('/withdraw', async (req, res) => {
+    await portfolioController.withdrawCash(req, res);
+});
 
 export default router; 

@@ -13,52 +13,6 @@ servers:
 
 paths:
   # 价格API
-  /price/{ticker}:
-    get:
-      summary: 获取单个资产价格
-      description: 获取指定资产的最新价格信息
-      tags:
-        - 价格API
-      parameters:
-        - name: ticker
-          in: path
-          required: true
-          description: 资产代码（如AAPL、MSFT等）
-          schema:
-            type: string
-            example: "AAPL"
-      responses:
-        '200':
-          description: 成功获取价格信息
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  ticker:
-                    type: string
-                    example: "AAPL"
-                  price:
-                    type: number
-                    format: float
-                    example: 160.50
-                  lastUpdated:
-                    type: string
-                    format: date-time
-                    example: "2024-01-01T09:30:00Z"
-        '404':
-          description: 资产未找到
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  error:
-                    type: string
-                    example: "Asset not found"
-        '500':
-          description: 服务器内部错误
-
   /price/batch:
     get:
       summary: 批量获取所有资产价格
@@ -562,6 +516,84 @@ paths:
                         type: number
                         format: float
                         example: 2.0
+        '400':
+          description: 请求参数错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: 服务器内部错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /portfolio/charge:
+    post:
+      summary: 充值现金
+      tags:
+        - 投资组合API
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                amount:
+                  type: number
+                  format: float
+                  example: 1000.00
+      responses:
+        '200':
+          description: 充值成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: 'Cash charged successfully'
+        '400':
+          description: 请求参数错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: 服务器内部错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /portfolio/withdraw:
+    post:
+      summary: 提现现金
+      tags:
+        - 投资组合API
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                amount:
+                  type: number
+                  format: float
+                  example: 500.00
+      responses:
+        '200':
+          description: 提现成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: 'Cash withdrawn successfully'
         '400':
           description: 请求参数错误
           content:

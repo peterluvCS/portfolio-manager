@@ -2,6 +2,36 @@ import { pool } from '../../config/db.js';
 
 export class PortfolioModel {
     /**
+     * 充值现金
+     */
+    async chargeCash(amount) {
+        if (amount <= 0) {
+            throw new Error('Amount must be greater than zero');
+        }
+        try {
+            await pool.execute('UPDATE portfolio SET quantity = quantity + ? WHERE ticker = ?', [amount, 'CASH']);
+        } catch (error) {
+            console.error('Error charging cash:', error);
+        }
+    }
+    /**
+     * 提现现金
+     */
+    async withdrawCash(amount) {
+        if (amount <= 0) {
+            throw new Error('Withdrawal amount must be greater than zero');
+        }
+        try {
+            const [rows] = await pool.execute('SELECT quantity FROM portfolio WHERE ticker = ?', ['CASH']);
+            if (rows.length === 0 || rows[0].quantity < amount) {
+                throw new Error('Insufficient cash balance');
+            }
+            await pool.execute('UPDATE portfolio SET quantity = quantity - ? WHERE ticker = ?', [amount, 'CASH']);
+        } catch (error) {
+            console.error('Error withdrawing cash:', error);
+        }
+    }
+    /**
      * 计算投资组合数据
      */
     async calculatePortfolio() {

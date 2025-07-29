@@ -697,7 +697,7 @@ const getPortfolio = async (req, res) => {
 };
 ```
 
-#### 4. 充值 (`POST /api/portfolio/deposit`)
+#### 4. 充值 (`POST /api/portfolio/charge`)
 ```javascript
 // 充值
 const deposit = async (req, res) => {

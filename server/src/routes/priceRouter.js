@@ -1,7 +1,7 @@
-const express = require('express');
+import express from 'express';
 const priceRouter = express.Router();
-const PriceController = require('../controllers/PriceController');
+import PriceController from '../controllers/PriceController.js';
 
 priceRouter.get('/batch', PriceController.getBatchPrices);
 
-module.exports = priceRouter;
+export default priceRouter;

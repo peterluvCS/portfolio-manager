@@ -29,5 +29,8 @@ CREATE TABLE portfolio (
   updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP 
 );
 
+insert into portfolio (ticker, quantity, avg_price, asset_type) values
+('CASH', 0, 0, 'cash');
+
 
 

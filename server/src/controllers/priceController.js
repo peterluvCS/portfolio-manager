@@ -1,4 +1,4 @@
-const Price = require('../models/Price');
+import Price from '../models/price.js';
 
 class PriceController {
     static async getBatchPrices(req, res) {
@@ -18,4 +18,4 @@ class PriceController {
     }
 }
 
-module.exports = PriceController;
+export default PriceController;
