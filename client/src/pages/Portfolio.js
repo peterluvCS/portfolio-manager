@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { portfolioAPI } from '../services/api';
+import AssetAllocationChart from '../components/AssetAllocationChart';
 import './Portfolio.css';
 
 const Portfolio = () => {
@@ -178,57 +179,66 @@ const Portfolio = () => {
             </div>
           </div>
 
-          {/* 持仓详情 */}
-          <div className="card">
-            <div className="card-header">
-              <h2>Holdings Details</h2>
+          {/* 图表区域 */}
+          <div className="charts-section grid grid-2">
+            <div className="card">
+              <div className="card-header">
+                <h2>Asset Allocation</h2>
+              </div>
+              <AssetAllocationChart portfolio={portfolio} />
             </div>
-            <div className="holdings-details">
-              {portfolio.holdings.map((holding) => (
-                <div key={holding.ticker} className="holding-item">
-                  <div className="holding-header">
-                    <div className="holding-info">
-                      <div className="holding-ticker">{holding.ticker}</div>
-                      <div className="holding-name">{holding.name}</div>
+            
+            <div className="card">
+              <div className="card-header">
+                <h2>Holdings Details</h2>
+              </div>
+              <div className="holdings-details">
+                {portfolio.holdings.map((holding) => (
+                  <div key={holding.ticker} className="holding-item">
+                    <div className="holding-header">
+                      <div className="holding-info">
+                        <div className="holding-ticker">{holding.ticker}</div>
+                        <div className="holding-name">{holding.name}</div>
+                      </div>
+                      <div className="holding-type">{holding.assetType}</div>
                     </div>
-                    <div className="holding-type">{holding.assetType}</div>
+                    
+                    <div className="holding-details grid grid-4">
+                      <div className="detail-item">
+                        <label>Quantity</label>
+                        <span>{holding.quantity}</span>
+                      </div>
+                      <div className="detail-item">
+                        <label>Avg Price</label>
+                        <span>{formatCurrency(holding.avgPrice)}</span>
+                      </div>
+                      <div className="detail-item">
+                        <label>Current Price</label>
+                        <span>{formatCurrency(holding.currentPrice)}</span>
+                      </div>
+                      <div className="detail-item">
+                        <label>Current Value</label>
+                        <span>{formatCurrency(holding.currentValue)}</span>
+                      </div>
+                    </div>
+                    
+                    <div className="holding-pnl">
+                      <div className="pnl-item">
+                        <label>P&L</label>
+                        <span className={holding.pnl >= 0 ? 'text-success' : 'text-danger'}>
+                          {formatCurrency(holding.pnl)}
+                        </span>
+                      </div>
+                      <div className="pnl-item">
+                        <label>P&L %</label>
+                        <span className={holding.pnlPercentage >= 0 ? 'text-success' : 'text-danger'}>
+                          {formatPercentage(holding.pnlPercentage)}
+                        </span>
+                      </div>
+                    </div>
                   </div>
-                  
-                  <div className="holding-details grid grid-4">
-                    <div className="detail-item">
-                      <label>Quantity</label>
-                      <span>{holding.quantity}</span>
-                    </div>
-                    <div className="detail-item">
-                      <label>Avg Price</label>
-                      <span>{formatCurrency(holding.avgPrice)}</span>
-                    </div>
-                    <div className="detail-item">
-                      <label>Current Price</label>
-                      <span>{formatCurrency(holding.currentPrice)}</span>
-                    </div>
-                    <div className="detail-item">
-                      <label>Current Value</label>
-                      <span>{formatCurrency(holding.currentValue)}</span>
-                    </div>
-                  </div>
-                  
-                  <div className="holding-pnl">
-                    <div className="pnl-item">
-                      <label>P&L</label>
-                      <span className={holding.pnl >= 0 ? 'text-success' : 'text-danger'}>
-                        {formatCurrency(holding.pnl)}
-                      </span>
-                    </div>
-                    <div className="pnl-item">
-                      <label>P&L %</label>
-                      <span className={holding.pnlPercentage >= 0 ? 'text-success' : 'text-danger'}>
-                        {formatPercentage(holding.pnlPercentage)}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
           </div>
         </>
