@@ -296,6 +296,12 @@
   color: #ffffff;
 }
 
+.portfolio-details-section {
+  max-width: 1200px;
+  margin: 0 auto;
+  margin-top: 32px;
+}
+
 /* 响应式设计 */
 @media (max-width: 768px) {
   .portfolio-header {

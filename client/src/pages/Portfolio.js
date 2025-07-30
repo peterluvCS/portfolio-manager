@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { portfolioAPI } from '../services/api';
-import AssetAllocationChart from '../components/AssetAllocationChart';
 import './Portfolio.css';
 
 const Portfolio = () => {
@@ -179,21 +178,14 @@ const Portfolio = () => {
             </div>
           </div>
 
-          {/* 图表区域 */}
-          <div className="charts-section grid grid-2">
-            <div className="card">
-              <div className="card-header">
-                <h2>Asset Allocation</h2>
-              </div>
-              <AssetAllocationChart portfolio={portfolio} />
-            </div>
-            
+          {/* 持仓详情 */}
+          <div className="portfolio-details-section">
             <div className="card">
               <div className="card-header">
                 <h2>Holdings Details</h2>
               </div>
               <div className="holdings-details">
-                {portfolio.holdings.map((holding) => (
+                {portfolio && portfolio.holdings.map((holding) => (
                   <div key={holding.ticker} className="holding-item">
                     <div className="holding-header">
                       <div className="holding-info">
@@ -202,7 +194,6 @@ const Portfolio = () => {
                       </div>
                       <div className="holding-type">{holding.assetType}</div>
                     </div>
-                    
                     <div className="holding-details grid grid-4">
                       <div className="detail-item">
                         <label>Quantity</label>
@@ -221,7 +212,6 @@ const Portfolio = () => {
                         <span>{formatCurrency(holding.currentValue)}</span>
                       </div>
                     </div>
-                    
                     <div className="holding-pnl">
                       <div className="pnl-item">
                         <label>P&L</label>

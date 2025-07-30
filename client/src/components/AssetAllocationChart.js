@@ -28,20 +28,20 @@ const AssetAllocationChart = ({ portfolio }) => {
     datasets: [{
       data: [stockValue, currencyValue, cashBalance],
       backgroundColor: [
-        '#4CAF50', // 绿色 - 股票
-        '#2196F3', // 蓝色 - 外汇
-        '#FF9800'  // 橙色 - 现金
+        '#5AD8A6', // Stocks
+        '#4F8CFF', // Currency
+        '#FFD166'  // Cash
       ],
       borderColor: [
-        '#388E3C',
-        '#1976D2', 
-        '#F57C00'
+        '#3CA97B', // Stocks border
+        '#3566B8', // Currency border
+        '#C9A13B'  // Cash border
       ],
       borderWidth: 2,
       hoverBackgroundColor: [
-        '#66BB6A',
-        '#42A5F5',
-        '#FFB74D'
+        '#7BE3BC', // Stocks hover
+        '#7CAFFF', // Currency hover
+        '#FFE29A'  // Cash hover
       ]
     }]
   };
