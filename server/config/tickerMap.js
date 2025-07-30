@@ -4,9 +4,9 @@ const tickerMap = {
   'NVDA':      { asset_type: 'stock',    realTicker: 'NVDA'},
   'AMZN':      { asset_type: 'stock',    realTicker: 'AMZN'},
   'WFC':       { asset_type: 'stock',    realTicker: 'WFC'},
-  'USD/CNY':   { asset_type: 'currency', realTicker: 'USDCNY=X' },
-  'USD/EUR':   { asset_type: 'currency', realTicker: 'USDEUR=X' },
-  'USD/JPY':   { asset_type: 'currency', realTicker: 'USDJPY=X' }
+  'CNY/USD':   { asset_type: 'currency', realTicker: 'CNYUSD=X' },
+  'EUR/USD':   { asset_type: 'currency', realTicker: 'EURUSD=X' },
+  'JPY/USD':   { asset_type: 'currency', realTicker: 'JPYUSD=X' }
 };
 
 export default tickerMap;
