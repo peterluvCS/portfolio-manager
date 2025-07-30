@@ -8,6 +8,7 @@ import swaggerUi from 'swagger-ui-express';
 import YAML from 'yamljs';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
+import Price from './models/price.js';
 
 const app = express();
 const PORT = process.env.PORT || 8081;
@@ -26,5 +27,8 @@ app.use('/api/portfolio', portfolioRoutes);
 app.use('/api/trade', tradeRoutes);
 
 app.listen(PORT, () => {
-  console.log(`Server is running on /http://localhost:${PORT}`);
+  console.log(`Server is running on http://localhost:${PORT}`);
+  
+  // 启动定时价格更新任务
+  Price.startPriceUpdateCron();
 });

@@ -1,4 +1,4 @@
-import Price from '../models/Price.js';
+import Price from '../models/price.js';
 import yahooFinance from 'yahoo-finance2';
 import tickerMap from '../../config/tickerMap.js';
 
