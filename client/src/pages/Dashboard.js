@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { portfolioAPI } from '../services/api';
+import AssetAllocationChart from '../components/AssetAllocationChart';
 import './Dashboard.css';
 
 const Dashboard = () => {
   const [portfolio, setPortfolio] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [updatingPrices, setUpdatingPrices] = useState(false);
 
   useEffect(() => {
     fetchPortfolio();
@@ -16,32 +18,8 @@ const Dashboard = () => {
       setLoading(true);
       setError(null);
       const response = await portfolioAPI.getPortfolio();
-      
-      // 转换后端数据结构为前端期望的格式
-      const data = response.data;
-      const cashHolding = data.portfolio.find(item => item.ticker === 'CASH');
-      const otherHoldings = data.portfolio.filter(item => item.ticker !== 'CASH');
-      
-      const transformedData = {
-        totalValue: data.summary.totalValue,
-        totalPnL: data.summary.totalProfitLoss,
-        totalPnLPercentage: data.summary.totalProfitLossPercent,
-        cashBalance: cashHolding ? cashHolding.currentValue : 0,
-        holdings: otherHoldings.map(holding => ({
-          ticker: holding.ticker,
-          name: holding.ticker, // 暂时用ticker作为name
-          quantity: parseFloat(holding.quantity),
-          avgPrice: parseFloat(holding.avgPrice),
-          currentPrice: parseFloat(holding.currentPrice),
-          currentValue: holding.currentValue,
-          pnl: holding.profitLoss,
-          pnlPercentage: holding.profitLossPercent
-        }))
-      };
-      
-      setPortfolio(transformedData);
+      setPortfolio(response.data);
     } catch (err) {
-      console.error('Error fetching portfolio:', err);
       setError('Failed to load portfolio data. Please check if the backend server is running.');
     } finally {
       setLoading(false);
@@ -62,130 +40,85 @@ const Dashboard = () => {
   return (
     <div className="dashboard">
       <div className="dashboard-header">
-        <h1>Dashboard</h1>
-        <p className="text-secondary">Portfolio Overview</p>
+        <div className="header-content">
+          <div>
+            <h1>Dashboard</h1>
+            <p className="text-secondary">Portfolio Overview</p>
+          </div>
+        </div>
       </div>
-
-      {/* 加载状态 */}
-      {loading && (
-        <div className="card">
-          <h3>Loading Portfolio Data...</h3>
-          <p>Please wait while we fetch your portfolio information.</p>
-        </div>
-      )}
-
-      {/* 错误状态 */}
-      {error && (
-        <div className="card">
-          <h3>Error Loading Data</h3>
-          <p>{error}</p>
-          <button 
-            className="button button-primary"
-            onClick={fetchPortfolio}
-          >
-            Retry
-          </button>
-        </div>
-      )}
-
-      {/* 投资组合数据 */}
-      {portfolio && !loading && !error && (
-        <>
-          {/* 总览卡片 */}
-          <div className="overview-cards grid grid-4">
-            <div className="card overview-card">
-              <div className="card-header">
-                <h3>Total Value</h3>
-                <span className="card-icon">💰</span>
-              </div>
-              <div className="card-value">{formatCurrency(portfolio.totalValue)}</div>
+      {/* Summary Cards */}
+      {portfolio && (
+        <div className="portfolio-stats grid grid-3">
+          <div className="card stat-card">
+            <div className="stat-header">
+              <h3>Total Value</h3>
+              <span className="stat-icon">💰</span>
             </div>
-
-            <div className="card overview-card">
-              <div className="card-header">
-                <h3>Total P&L</h3>
-                <span className="card-icon">📈</span>
-              </div>
-              <div className={`card-value ${portfolio.totalPnL >= 0 ? 'text-success' : 'text-danger'}`}>
-                {formatCurrency(portfolio.totalPnL)}
-              </div>
-              <div className={`card-subtitle ${portfolio.totalPnLPercentage >= 0 ? 'text-success' : 'text-danger'}`}>
-                {formatPercentage(portfolio.totalPnLPercentage)}
-              </div>
+            <div className="stat-value">{formatCurrency(portfolio.summary.totalValue)}</div>
+          </div>
+          <div className="card stat-card">
+            <div className="stat-header">
+              <h3>Total P&L</h3>
+              <span className="stat-icon">📈</span>
             </div>
-
-            <div className="card overview-card">
-              <div className="card-header">
-                <h3>Cash Balance</h3>
-                <span className="card-icon">💵</span>
-              </div>
-              <div className="card-value">{formatCurrency(portfolio.cashBalance)}</div>
+            <div className={`stat-value ${portfolio.summary.totalProfitLoss >= 0 ? 'text-success' : 'text-danger'}`}>
+              {formatCurrency(portfolio.summary.totalProfitLoss)}
             </div>
-
-            <div className="card overview-card">
-              <div className="card-header">
-                <h3>Total Assets</h3>
-                <span className="card-icon">📊</span>
-              </div>
-              <div className="card-value">{portfolio.holdings.length}</div>
+            <div className={`stat-subtitle ${portfolio.summary.totalProfitLossPercent >= 0 ? 'text-success' : 'text-danger'}`}>
+              {formatPercentage(portfolio.summary.totalProfitLossPercent)}
             </div>
           </div>
-
-          {/* 持仓列表 */}
-          <div className="card">
-            <div className="card-header">
-              <h2>Holdings</h2>
+          <div className="card stat-card">
+            <div className="stat-header">
+              <h3>Cash Balance</h3>
+              <span className="stat-icon">💵</span>
             </div>
-            <div className="holdings-table">
-              <table>
-                <thead>
-                  <tr>
-                    <th>Asset</th>
-                    <th>Quantity</th>
-                    <th>Avg Price</th>
-                    <th>Current Price</th>
-                    <th>Current Value</th>
-                    <th>P&L</th>
-                    <th>P&L %</th>
+            <div className="stat-value">{formatCurrency(portfolio.portfolio.find(item => item.ticker === 'CASH')?.currentValue || 0)}</div>
+          </div>
+        </div>
+      )}
+      {/* Main Section: Pie Chart + Holdings */}
+      <div className="dashboard-main-section">
+        <div className="card asset-allocation-card">
+          <div className="card-header">
+            <h2>Asset Allocation</h2>
+          </div>
+          {portfolio && <AssetAllocationChart portfolio={{
+            holdings: portfolio.portfolio.filter(item => item.ticker !== 'CASH'),
+            cashBalance: portfolio.portfolio.find(item => item.ticker === 'CASH')?.currentValue || 0
+          }} />}
+        </div>
+        <div className="card holdings-card">
+          <div className="card-header">
+            <h2>Holdings</h2>
+          </div>
+          {portfolio && (
+            <table className="holdings-table">
+              <thead>
+                <tr>
+                  <th>Asset</th>
+                  <th>Quantity</th>
+                  <th>Current Price</th>
+                  <th>P&amp;L %</th>
+                </tr>
+              </thead>
+              <tbody>
+                {portfolio.portfolio.filter(item => item.ticker !== 'CASH').map((holding) => (
+                  <tr key={holding.ticker}>
+                    <td>{holding.ticker}</td>
+                    <td>{parseFloat(holding.quantity)}</td>
+                    <td>{formatCurrency(holding.currentPrice)}</td>
+                    <td className={holding.profitLossPercent >= 0 ? 'text-success' : 'text-danger'}>
+                      {formatPercentage(holding.profitLossPercent)}
+                    </td>
                   </tr>
-                </thead>
-                <tbody>
-                  {portfolio.holdings.map((holding) => (
-                    <tr key={holding.ticker}>
-                      <td>
-                        <div className="asset-info">
-                          <span className="asset-ticker">{holding.ticker}</span>
-                          <span className="asset-name">{holding.name}</span>
-                        </div>
-                      </td>
-                      <td>{holding.quantity}</td>
-                      <td>{formatCurrency(holding.avgPrice)}</td>
-                      <td>{formatCurrency(holding.currentPrice)}</td>
-                      <td>{formatCurrency(holding.currentValue)}</td>
-                      <td className={holding.pnl >= 0 ? 'text-success' : 'text-danger'}>
-                        {formatCurrency(holding.pnl)}
-                      </td>
-                      <td className={holding.pnlPercentage >= 0 ? 'text-success' : 'text-danger'}>
-                        {formatPercentage(holding.pnlPercentage)}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </>
-      )}
-
-      {/* 测试内容（当没有数据时显示） */}
-      {!portfolio && !loading && !error && (
-        <div className="card">
-          <h2>Welcome to Portfolio Manager</h2>
-          <p>This is a test to see if the page is rendering correctly.</p>
-          <p>If you can see this, the page is working!</p>
-          <p>Current time: {new Date().toLocaleString()}</p>
+                ))}
+              </tbody>
+            </table>
+          )}
         </div>
-      )}
+      </div>
     </div>
   );
 };
