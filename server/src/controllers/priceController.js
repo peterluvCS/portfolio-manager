@@ -19,15 +19,15 @@ class PriceController {
         }
     }
     static async updateAllPrices(req, res) {
-        const { mode = 'realtime', date } = req.body;
+        const { mode = 'realtime', startDate, endDate } = req.body;
         const results = [];
       
         try {
           if (mode === 'historical') {
-            if (!date) return res.status(400).json({ message: "Missing 'date' for historical mode." });
+            if (!startDate && !endDate) return res.status(400).json({ message: "Missing 'startDate' or 'endDate' for historical mode." });
       
-            const r = await Price.fetchAndInsertHistoricalPrices(date);
-            return res.json({ message: `Historical prices for ${date} updated.`, results: r });
+            const r = await Price.fetchAndInsertHistoricalPrices(startDate, endDate);
+            return res.json({ message: `Historical prices from ${startDate} to ${endDate} updated.`, results: r });
           }
       
           // Default: realtime

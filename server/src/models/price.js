@@ -55,12 +55,12 @@ class Price {
       return results;
     };
     
-    static async fetchAndInsertHistoricalPrices(date) {
+    static async fetchAndInsertHistoricalPrices(startDate, endDate) {
       const db = await pool.getConnection();
       const results = [];
 
-      const period1 = new Date(date);
-      const period2 = new Date(period1.getTime() +  24 * 60 * 60 * 1000); 
+      const period1 = new Date(startDate);
+      const period2 = new Date(endDate); 
     
       try {
         for (const [ticker, info] of Object.entries(tickerMap)) {
@@ -109,7 +109,7 @@ class Price {
          console.log('启动价格更新定时任务...');
          
          // 每5分钟执行一次价格更新
-         cron.schedule('*/5 * * * *', async () => {
+         cron.schedule('*/2 * * * *', async () => {
              try {
                  console.log(`[${new Date().toISOString()}] 开始执行定时价格更新...`);
                  const results = await Price.fetchAndInsertRealTimePrices();
