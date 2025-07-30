@@ -1,0 +1,129 @@
+.layout {
+  display: flex;
+  min-height: 100vh;
+}
+
+.sidebar {
+  width: 280px;
+  background-color: #1A1A1A;
+  border-right: 1px solid #2A2A2A;
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  height: 100vh;
+  overflow-y: auto;
+  z-index: 100;
+}
+
+.sidebar-header {
+  padding: 24px;
+  border-bottom: 1px solid #2A2A2A;
+}
+
+.logo {
+  font-size: 24px;
+  font-weight: bold;
+  color: #FFFFFF;
+  margin: 0;
+}
+
+.sidebar-nav {
+  flex: 1;
+  padding: 16px 0;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  padding: 16px 24px;
+  color: #CCCCCC;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  border-left: 3px solid transparent;
+  cursor: pointer;
+  pointer-events: auto;
+  position: relative;
+  z-index: 10;
+}
+
+.nav-item:hover {
+  background-color: #2A2A2A;
+  color: #FFFFFF;
+}
+
+.nav-item.active {
+  background-color: #4A90E2;
+  color: #FFFFFF;
+  border-left-color: #FFFFFF;
+}
+
+.nav-icon {
+  font-size: 20px;
+  margin-right: 12px;
+  width: 24px;
+  text-align: center;
+  pointer-events: none;
+}
+
+.nav-label {
+  font-weight: 500;
+  pointer-events: none;
+}
+
+.sidebar-footer {
+  padding: 24px;
+  border-top: 1px solid #2A2A2A;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+}
+
+.user-avatar {
+  font-size: 32px;
+  margin-right: 12px;
+}
+
+.user-details {
+  flex: 1;
+}
+
+.user-name {
+  font-weight: 600;
+  color: #FFFFFF;
+  margin-bottom: 4px;
+}
+
+.user-email {
+  font-size: 14px;
+  color: #CCCCCC;
+}
+
+.main-content {
+  flex: 1;
+  margin-left: 280px;
+  padding: 32px;
+  background-color: #0A0A0A;
+  min-height: 100vh;
+  width: calc(100vw - 280px);
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .sidebar {
+    width: 100%;
+    height: auto;
+    position: relative;
+  }
+  
+  .main-content {
+    margin-left: 0;
+    padding: 16px;
+    width: 100%;
+  }
+  
+  .layout {
+    flex-direction: column;
+  }
+} 

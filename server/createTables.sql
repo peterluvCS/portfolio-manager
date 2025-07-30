@@ -30,7 +30,7 @@ CREATE TABLE portfolio (
 );
 
 insert into portfolio (ticker, quantity, avg_price, asset_type) values
-('CASH', 0, 0, 'cash');
+('CASH', 10000, 0, 'cash');
 
 
 

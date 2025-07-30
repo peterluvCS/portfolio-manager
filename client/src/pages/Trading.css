@@ -1,0 +1,186 @@
+.trading {
+  width: 100%;
+}
+
+.trading-header {
+  margin-bottom: 32px;
+}
+
+.trading-header h1 {
+  font-size: 32px;
+  font-weight: bold;
+  margin-bottom: 8px;
+  color: #FFFFFF;
+}
+
+.trading-container {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 24px;
+}
+
+.trading-form {
+  padding: 32px;
+}
+
+.form-header {
+  margin-bottom: 24px;
+}
+
+.form-header h2 {
+  font-size: 24px;
+  font-weight: bold;
+  color: #FFFFFF;
+  margin: 0;
+}
+
+.trade-type-selector {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.trade-type-btn {
+  flex: 1;
+  padding: 16px;
+  border: 2px solid #2A2A2A;
+  background-color: transparent;
+  color: #CCCCCC;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.trade-type-btn:hover {
+  border-color: #0984E3;
+  color: #FFFFFF;
+}
+
+.trade-type-btn.active {
+  border-color: #0984E3;
+  background-color: #0984E3;
+  color: #FFFFFF;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  display: block;
+  font-size: 14px;
+  color: #CCCCCC;
+  margin-bottom: 8px;
+  font-weight: 500;
+}
+
+.form-input {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #2A2A2A;
+  border-radius: 8px;
+  background-color: #0A0A0A;
+  color: #FFFFFF;
+  font-size: 16px;
+  transition: border-color 0.2s ease;
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: #0984E3;
+}
+
+.current-price {
+  font-size: 14px;
+  color: #0984E3;
+  margin-top: 8px;
+  font-weight: 500;
+}
+
+.total-amount {
+  margin-bottom: 24px;
+  padding: 16px;
+  background-color: #0A0A0A;
+  border-radius: 8px;
+  border: 1px solid #2A2A2A;
+}
+
+.total-amount label {
+  display: block;
+  font-size: 14px;
+  color: #CCCCCC;
+  margin-bottom: 8px;
+  font-weight: 500;
+}
+
+.total-value {
+  font-size: 24px;
+  font-weight: bold;
+  color: #FFFFFF;
+}
+
+.message {
+  margin-top: 16px;
+  padding: 12px;
+  border-radius: 8px;
+  font-weight: 500;
+}
+
+.message.success {
+  background-color: rgba(0, 166, 126, 0.1);
+  color: #00A67E;
+  border: 1px solid rgba(0, 166, 126, 0.3);
+}
+
+.message.error {
+  background-color: rgba(214, 48, 49, 0.1);
+  color: #D63031;
+  border: 1px solid rgba(214, 48, 49, 0.3);
+}
+
+.market-info {
+  height: fit-content;
+}
+
+.market-prices {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.market-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px;
+  background-color: #0A0A0A;
+  border-radius: 8px;
+  border: 1px solid #2A2A2A;
+}
+
+.market-ticker {
+  font-weight: 600;
+  color: #FFFFFF;
+}
+
+.market-price {
+  font-weight: 500;
+  color: #CCCCCC;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .trading-container {
+    grid-template-columns: 1fr;
+  }
+  
+  .trade-type-selector {
+    flex-direction: column;
+  }
+  
+  .trading-form {
+    padding: 24px;
+  }
+} 

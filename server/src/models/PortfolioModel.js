@@ -39,6 +39,8 @@ export class PortfolioModel {
         const portfolio = [];
         let totalCost = 0;
         let totalValue = 0;
+        let totalProfitLoss = 0;
+        let totalProfitLossPercent = 0;
 
         for (const holding of holdings) {
             let currentPrice;
@@ -56,7 +58,7 @@ export class PortfolioModel {
             }
             
             const currentValue = holding.quantity * currentPrice;
-            const profitLoss = currentValue - (holding.quantity * holding.avg_price);
+            const profitLoss = holding.ticker === 'CASH' ? 0 : currentValue - (holding.quantity * holding.avg_price);
             const profitLossPercent = holding.ticker === 'CASH' ? 0 : ((currentPrice - holding.avg_price) / holding.avg_price) * 100;
 
             portfolio.push({
@@ -69,19 +71,26 @@ export class PortfolioModel {
                 profitLossPercent
             });
 
-            totalCost += holding.quantity * holding.avg_price;
-            totalValue += currentValue;
+            // 只计算非CASH资产的总成本和总价值
+            if (holding.ticker !== 'CASH') {
+                totalCost += holding.quantity * holding.avg_price;
+                totalValue += currentValue;
+            }
         }
 
-        const totalProfitLoss = totalValue - totalCost;
-        const totalProfitLossPercent = totalCost > 0 ? (totalProfitLoss / totalCost) * 100 : 0;
+        // 计算总盈亏（只考虑非CASH资产）
+        totalProfitLoss = totalValue - totalCost;
+        totalProfitLossPercent = totalCost > 0 ? (totalProfitLoss / totalCost) * 100 : 0;
+
+        // 计算包含CASH的总价值（用于显示总资产价值）
+        const totalValueWithCash = portfolio.reduce((sum, item) => sum + item.currentValue, 0);
 
         return {
             portfolio,
             summary: {
                 totalCost,
-                totalValue,
-                totalProfitLoss,
+                totalValue: totalValueWithCash, // 总价值包含CASH
+                totalProfitLoss, // 总盈亏只计算非CASH资产
                 totalProfitLossPercent
             }
         };
