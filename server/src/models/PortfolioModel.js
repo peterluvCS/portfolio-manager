@@ -68,7 +68,8 @@ export class PortfolioModel {
                 currentPrice,
                 currentValue,
                 profitLoss,
-                profitLossPercent
+                profitLossPercent,
+                assetType:holding.asset_type
             });
 
             // 只计算非CASH资产的总成本和总价值
