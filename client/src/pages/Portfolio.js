@@ -37,7 +37,7 @@ const Portfolio = () => {
         holdings: otherHoldings.map(holding => ({
           ticker: holding.ticker,
           name: holding.ticker, // 暂时用ticker作为name
-          assetType: 'stock', // 暂时默认为stock
+          assetType: holding.assetType, // 暂时默认为stock
           quantity: parseFloat(holding.quantity),
           avgPrice: parseFloat(holding.avgPrice),
           currentPrice: parseFloat(holding.currentPrice),

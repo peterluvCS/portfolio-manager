@@ -216,7 +216,7 @@ const Trading = () => {
             </div>
           ) : (
             <div className="market-prices">
-              {assets.slice(0, 6).map((asset) => (
+              {assets.slice(0, 7).map((asset) => (
                 <div key={asset.ticker} className="market-item">
                   <div className="market-ticker">{asset.ticker}</div>
                   <div className="market-price">{formatCurrency(asset.price)}</div>
