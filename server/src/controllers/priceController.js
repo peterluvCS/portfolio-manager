@@ -10,7 +10,8 @@ class PriceController {
             const prices = rows.map(row => ({
                 ticker: row.ticker,
                 price: row.price,
-                lastUpdated: row.datetime
+                lastUpdated: row.datetime,
+                asset_type: row.asset_type  
             }));
             
             res.json({ prices });

@@ -6,7 +6,7 @@ import cron from 'node-cron';
 class Price {
     static async getLatestPrices() {
         const [rows] = await pool.execute(`
-            SELECT ticker, price, datetime 
+            SELECT ticker, price, datetime , asset_type
             FROM stock_currency sc1
             WHERE datetime = (
                 SELECT MAX(datetime) 
